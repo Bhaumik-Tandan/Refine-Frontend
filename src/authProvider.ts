@@ -1,35 +1,36 @@
 import { AuthBindings } from "@refinedev/core";
+import apiHelper from "utility/apiHelper";
 
-export const TOKEN_KEY = "refine-auth";
+export const TOKEN_EXPIRES = "token_expires";
 
 export const authProvider: AuthBindings = {
-  login: async ({ username, email, password }) => {
-    if ((username || email) && password) {
-      localStorage.setItem(TOKEN_KEY, username);
+  login: async (data) => {
+    const response  = await apiHelper("post", "/auth/login", data);
+
+    if(response.status === 200){
+      const { data:{expires} } = response;
+      localStorage.setItem(TOKEN_EXPIRES, expires);
       return {
         success: true,
-        redirectTo: "/",
       };
     }
 
     return {
       success: false,
-      error: {
-        name: "LoginError",
-        message: "Invalid username or password",
-      },
     };
-  },
+
+},
   logout: async () => {
-    localStorage.removeItem(TOKEN_KEY);
+     await apiHelper("get", "/auth/logout",{});
+    localStorage.removeItem(TOKEN_EXPIRES);
     return {
       success: true,
       redirectTo: "/login",
     };
   },
   check: async () => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token) {
+    const expires = localStorage.getItem(TOKEN_EXPIRES);
+    if (expires && new Date(expires) > new Date()) {
       return {
         authenticated: true,
       };
@@ -40,17 +41,22 @@ export const authProvider: AuthBindings = {
       redirectTo: "/login",
     };
   },
-  getPermissions: async () => null,
-  getIdentity: async () => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token) {
+  forgotPassword: async (data) => {
+    const response = await apiHelper("post", "/auth/forgot-password", data);
+    if (response.status.toString().startsWith("2")) {
+      const { data } = response;
       return {
-        id: 1,
-        name: "John Doe",
-        avatar: "https://i.pravatar.cc/300",
+        success: true,
+        redirectTo: `/login`,
       };
     }
-    return null;
+    return {
+      success: false,
+    };
+  },
+  getPermissions: async () => Promise.resolve(),
+  getIdentity: async () => {
+    return Promise.resolve();
   },
   onError: async (error) => {
     console.error(error);
