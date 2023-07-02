@@ -1,5 +1,5 @@
 import { IResourceComponentsProps } from "@refinedev/core";
-import { Button, Form, Input, Tabs, Table } from "antd";
+import { Button, Form, Input, Tabs, Table, Select } from "antd";
 import { useState, useRef, useEffect } from "react";
 import apiHelper from "utility/apiHelper";
 
@@ -47,6 +47,8 @@ export const BlogPostList: React.FC<IResourceComponentsProps> = () => {
     setFormValues(values);
     console.log("Form values:", values);
   };
+
+  
 
   const formRef = useRef<any>(null);
 
@@ -123,6 +125,63 @@ export const BlogPostList: React.FC<IResourceComponentsProps> = () => {
           </Button>
         </TabPane>
         <TabPane tab="Contact Details" key="2">
+          <Form form={formRef.current} onFinish={handleFormSubmit}>
+    <Form.Item
+      label="Title"
+      rules={[
+        { required: true, message: "Title is required" },
+        {
+          validator: (_, value) => {
+            if (!value) {
+              return Promise.reject("Title is required");
+            } else {
+              return Promise.resolve();
+            }
+          },
+        },
+      ]}
+    >
+      <Select>
+        <Select.Option value="Mr">Mr</Select.Option>
+        <Select.Option value="Mrs">Mrs</Select.Option>
+        <Select.Option value="Miss">Miss</Select.Option>
+        <Select.Option value="Ms">Ms</Select.Option>
+      </Select>
+    </Form.Item>
+
+    <Form.Item
+      label="Name"
+      rules={[{ required: true, message: "Name is required" }]}
+    >
+      <Input />
+    </Form.Item>
+
+    <Form.Item
+      label="Phone Number"
+      rules={[{ required: true, message: "Phone number is required" }]}
+    >
+      <Input />
+    </Form.Item>
+
+    <Form.Item
+      label="Email"
+      rules={[{ required: true, message: "Email is required" }]}
+    >
+      <Input />
+    </Form.Item>
+
+    <Form.Item
+      label="Designation"
+      rules={[{ required: true, message: "Designation is required" }]}
+    >
+      <Input />
+    </Form.Item>
+
+    <Form.Item>
+      <Button type="primary" htmlType="submit">
+    </Form.Item>
+  </Form>
+
           <Table
             dataSource={contactDetails}
             columns={columns}
