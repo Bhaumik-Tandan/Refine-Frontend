@@ -178,7 +178,7 @@ export const BlogPostList: React.FC<IResourceComponentsProps> = () => {
     </Form.Item>
 
     <Form.Item>
-      <Button type="primary" htmlType="submit">
+      <Button type="primary" htmlType="submit"/>
     </Form.Item>
   </Form>
 
